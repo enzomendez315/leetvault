@@ -21,6 +21,11 @@ class UserRegister(SQLModel):
     first_name: str | None = Field(default=None, max_length=255)
     last_name: str | None = Field(default=None, max_length=255)
 
+# Properties received via API on update, all are optional
+class UserUpdate(UserBase):
+    email: EmailStr | None = Field(default=None, max_length=255)
+    password: str | None = Field(default=None, min_length=8, max_length=40)
+
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
