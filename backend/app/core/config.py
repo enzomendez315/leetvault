@@ -1,14 +1,15 @@
 import secrets
-
 from typing import Literal
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic_core import MultiHostUrl
+
 from pydantic import (
-    PostgresDsn,
+    EmailStr,
     HttpUrl,
+    PostgresDsn,
     computed_field,
-    EmailStr
 )
+from pydantic_core import MultiHostUrl
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -46,5 +47,6 @@ class Settings(BaseSettings):
 
     FIRST_SUPERUSER: EmailStr
     FIRST_SUPERUSER_PASSWORD: str
+
 
 settings = Settings()  # type: ignore
