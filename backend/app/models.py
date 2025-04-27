@@ -53,3 +53,14 @@ class Problem(SQLModel, table=True):
 class SolvedProblemSet(SQLModel, table=True):
     id: int = Field(primary_key=True)
     number: int = Field(unique=True, index=True)
+
+
+# JSON payload containing access token
+class Token(SQLModel):
+    access_token: str
+    token_type: str = "Bearer"
+
+
+# Contents of JWT token
+class TokenPayload(SQLModel):
+    sub: str | None = None
