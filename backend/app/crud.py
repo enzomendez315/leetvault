@@ -5,11 +5,11 @@ from app.models import User, UserCreate, UserUpdate
 
 
 def create_user(*, session: Session, user_create: UserCreate) -> User:
-    db_obj = User.model_validate(user_create)
-    session.add(db_obj)
+    db_user = User.model_validate(user_create)
+    session.add(db_user)
     session.commit()
-    session.refresh(db_obj)
-    return db_obj
+    session.refresh(db_user)
+    return db_user
 
 
 def update_user(*, session: Session, db_user: User, user_update: UserUpdate) -> User:
@@ -27,7 +27,7 @@ def update_user(*, session: Session, db_user: User, user_update: UserUpdate) -> 
     return db_user
 
 
-def delete_user(*, session: Session) -> User:
+def delete_user(*, session: Session, user_delete: User) -> None:
     pass
 
 
