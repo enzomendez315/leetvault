@@ -36,6 +36,16 @@ class User(UserBase, table=True):
     hashed_password: str
 
 
+# Properties to return via API, id is always required
+class UserPublic(SQLModel):
+    id: uuid.UUID
+
+
+class UserPublic(SQLModel):
+    data: list[UserPublic]
+    count: int
+
+
 class Difficulty(str, Enum):
     EASY = "easy"
     MEDIUM = "medium"
@@ -55,6 +65,11 @@ class SolvedProblemSet(SQLModel, table=True):
     number: int = Field(unique=True, index=True)
 
 
+# Generic message
+class Message(SQLModel):
+    message: str
+
+
 # JSON payload containing access token
 class Token(SQLModel):
     access_token: str
@@ -64,3 +79,8 @@ class Token(SQLModel):
 # Contents of JWT token
 class TokenPayload(SQLModel):
     sub: str | None = None
+
+
+class NewPassword(SQLModel):
+    token: str
+    new_password: str = Field(min_length=8, max_length=40)
