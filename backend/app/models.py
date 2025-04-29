@@ -65,6 +65,11 @@ class SolvedProblemSet(SQLModel, table=True):
     number: int = Field(unique=True, index=True)
 
 
+class EmailData(SQLModel):
+    html_content: str
+    subject: str
+
+
 # Generic message
 class Message(SQLModel):
     message: str
