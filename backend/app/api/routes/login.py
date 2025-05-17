@@ -3,16 +3,19 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from starlette.responses import HTMLResponse
 
 from app import crud
 from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
 from app.core import security
 from app.core.config import settings
-from app.models import Message, Token, UserPublic, TokenPayload
+from app.core.security import get_password_hash
+from app.models import Message, NewPassword, Token, TokenPayload, UserPublic
 from app.utils import (
     generate_reset_password_email,
     generate_reset_password_token,
-    send_email
+    send_email,
+    verify_reset_password_token,
 )
 
 router = APIRouter(tags=["login"])
@@ -74,8 +77,10 @@ def recover_password(email: str, session: SessionDep) -> Message:
         Message
     """
     user = crud.get_user_by_email(session=session, email=email)
+
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+
     password_reset_token = generate_reset_password_token(email=email)
     email_data = generate_reset_password_email(
         email_to=user.email, email=email, token=password_reset_token
@@ -85,4 +90,65 @@ def recover_password(email: str, session: SessionDep) -> Message:
         subject=email_data.subject,
         html_content=email_data.html_content
     )
+
     return Message(message="Password recovery email sent")
+
+
+@router.post("reset-password/")
+def reset_password(session: SessionDep, body: NewPassword) -> Message:
+    """
+    Reset password
+
+    Args:
+        session
+        body
+
+    Returns:
+        Message
+    """
+    email = verify_reset_password_token(token=body.token)
+
+    if not email:
+        raise HTTPException(status_code=400, detail="Invalid token")
+    user = crud.get_user_by_email(session=session, email=email)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    elif not user.is_active:
+        raise HTTPException(status_code=400, detail="Inactive user")
+
+    hashed_password = get_password_hash(password=body.new_password)
+    user.hashed_password = hashed_password
+
+    session.add(user)
+    session.commit()
+    return Message(message="Password updated successfully")
+
+
+@router.post(
+    "/password-recovery-html-content/{email}",
+    dependencies=[Depends(get_current_active_superuser)],
+    response_model=HTMLResponse
+)
+def recover_password_html_content(email: str, session: SessionDep) -> Any:
+    """
+    HTML content for password recovery
+
+    Args:
+        email
+        session
+
+    Returns:
+        Any
+    """
+    user = crud.get_user_by_email(session=session, email=email)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    password_reset_token = generate_reset_password_token(email=email)
+    email_data = generate_reset_password_email(
+        email_to=user.email, email=email, token=password_reset_token
+    )
+
+    return HTMLResponse(content=email_data.html_content, headers={"subject:": email_data.subject})
