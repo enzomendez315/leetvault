@@ -41,7 +41,7 @@ class UserPublic(SQLModel):
     id: uuid.UUID
 
 
-class UserPublic(SQLModel):
+class UsersPublic(SQLModel):
     data: list[UserPublic]
     count: int
 
@@ -52,17 +52,19 @@ class Difficulty(str, Enum):
     HARD = "hard"
 
 
-class Problem(SQLModel, table=True):
-    id: int = Field(primary_key=True)
+class ProblemBase(SQLModel):
     number: int = Field(unique=True, index=True)
     name: str = Field(index=True, max_length=255)
-    description: str
+    description: str | None = Field(default=None, max_length=255)
     difficulty: Difficulty = Field(default=Difficulty.MEDIUM, index=True)
 
 
-class SolvedProblemSet(SQLModel, table=True):
-    id: int = Field(primary_key=True)
-    number: int = Field(unique=True, index=True)
+class Problem(ProblemBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+
+
+class ProblemSolved(ProblemBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
 
 
 class EmailData(SQLModel):
