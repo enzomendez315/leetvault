@@ -31,6 +31,7 @@ class UserUpdate(UserBase):
     password: str | None = Field(default=None, min_length=8, max_length=40)
 
 
+# Database model
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
@@ -54,13 +55,35 @@ class Difficulty(str, Enum):
 
 class ProblemBase(SQLModel):
     number: int = Field(unique=True, index=True)
-    name: str = Field(index=True, max_length=255)
+    name: str = Field(index=True, min_length=1, max_length=255)
     description: str | None = Field(default=None, max_length=255)
     difficulty: Difficulty = Field(default=Difficulty.MEDIUM, index=True)
 
 
+# Properties to receive on problem creation
+class ProblemCreate(ProblemBase):
+    pass
+
+
+# Properties to receive on problem update
+class ProblemUpdate(ProblemBase):
+    name: str | None = Field(default=None, min_length=1, max_length=255)
+    description: str | None = Field(default=None, max_length=255)
+
+
+# Database model
 class Problem(ProblemBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+
+
+# Properties to return via API, id is always required
+class ProblemPublic(ProblemBase):
+    id: uuid.UUID
+
+
+class ProblemsPublic(SQLModel):
+    data: list[ProblemPublic]
+    count: int
 
 
 class ProblemSolved(ProblemBase, table=True):
