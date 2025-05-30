@@ -88,6 +88,7 @@ class ProblemsPublic(SQLModel):
 
 class ProblemSolved(ProblemBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    owner: User = Relationship(back_populates="users", cascade_delete=True)
 
 
 class EmailData(SQLModel):

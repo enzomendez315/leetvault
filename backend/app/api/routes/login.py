@@ -26,14 +26,12 @@ def login_access_token(
         session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ) -> Token:
     """
-    OAuth2 compatible token login, get an access token for future requests
+    OAuth2-compatible login to obtain an access token for authenticated requests.
 
-    Args:
-        session
-        form_data
+    - **session**: Database session dependency.
+    - **form_data**: Login form data with `username` and `password`.
 
-    Returns:
-        Token
+    Returns an access token if authentication is successful.
     """
     user = crud.authenticate(
         session=session, email=form_data.username, password=form_data.password
@@ -53,13 +51,11 @@ def login_access_token(
 @router.post("/login/test-token", response_model=UserPublic)
 def test_token(current_user: CurrentUser) -> Any:
     """
-    Test access token
+    Test the validity of an access token by retrieving the current user.
 
-    Args:
-        current_user
+    - **current_user**: The user extracted from the token.
 
-    Returns:
-        Any
+    Returns the authenticated user if the token is valid.
     """
     return current_user
 
@@ -67,14 +63,12 @@ def test_token(current_user: CurrentUser) -> Any:
 @router.post("/password-recovery/{email}")
 def recover_password(email: str, session: SessionDep) -> Message:
     """
-    Password recovery
+    Send a password recovery email to the specified address.
 
-    Args:
-        email
-        session
+    - **email**: Email of the user requesting password reset.
+    - **session**: Database session dependency.
 
-    Returns:
-        Message
+    Sends a recovery link if the user exists.
     """
     user = crud.get_user_by_email(session=session, email=email)
 
@@ -97,14 +91,12 @@ def recover_password(email: str, session: SessionDep) -> Message:
 @router.post("reset-password/")
 def reset_password(session: SessionDep, body: NewPassword) -> Message:
     """
-    Reset password
+    Reset the password using a valid token.
 
-    Args:
-        session
-        body
+    - **session**: Database session dependency.
+    - **body**: Payload containing the new password and token.
 
-    Returns:
-        Message
+    Updates the user's password if the token is valid.
     """
     email = verify_reset_password_token(token=body.token)
 
@@ -132,14 +124,12 @@ def reset_password(session: SessionDep, body: NewPassword) -> Message:
 )
 def recover_password_html_content(email: str, session: SessionDep) -> Any:
     """
-    HTML content for password recovery
+    Generate the HTML content for a password recovery email.
 
-    Args:
-        email
-        session
+    - **email**: Email address of the user.
+    - **session**: Database session dependency.
 
-    Returns:
-        Any
+    Returns the HTML email content and subject header (admin only).
     """
     user = crud.get_user_by_email(session=session, email=email)
 
