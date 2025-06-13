@@ -11,7 +11,7 @@ const sampleProblems: Problem[] = [
     name: "Two Sum",
     description: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
     difficulty: "Easy",
-    category: "Array",
+    category: "Array & Hashing",
     solution: "Use a hash map to store complements",
     approach: "Hash Map",
     timeComplexity: "O(n)",
@@ -85,11 +85,22 @@ function App() {
             onChange={(e) => setFilter({...filter, category: e.target.value})}
           >
             <option value="All">All Categories</option>
-            <option value="Array">Array</option>
+            <option value="Array & Hashing">Array & Hashing</option>
+            <option value="Two Pointers">Two Pointers</option>
+            <option value="Sliding Window">Sliding Window</option>
+            <option value="Stack">Stack</option>
+            <option value="Binary Search">Binary Search</option>
             <option value="Linked List">Linked List</option>
-            <option value="String">String</option>
             <option value="Tree">Tree</option>
+            <option value="Heap & Priority Queue">Heap & Priority Queue</option>
+            <option value="Backtracking">Backtracking</option>
+            <option value="Tries">Tries</option>
             <option value="Graph">Graph</option>
+            <option value="Dynamic Programming">Dynamic Programming</option>
+            <option value="Greedy">Greedy</option>
+            <option value="Intervals">Intervals</option>
+            <option value="Math & Geometry">Math & Geometry</option>
+            <option value="Bit Manipulation">Bit Manipulation</option>
           </select>
         </div>
 
