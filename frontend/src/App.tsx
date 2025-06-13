@@ -38,7 +38,7 @@ const sampleProblems: Problem[] = [
 ];
 
 function App() {
-  const [problems, setProblems] = useState<Problem[]>(sampleProblems);
+  const [problems, _setProblems] = useState<Problem[]>(sampleProblems);
   const [filter, setFilter] = useState({
     difficulty: 'All',
     status: 'All',
